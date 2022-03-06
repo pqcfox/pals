@@ -6,18 +6,23 @@ use crate::prompt::prompt_user;
 pub fn get_problem_fns() -> Vec<fn()> {
     vec![
         hex_to_base64_exercise,
-        fixed_xor_exercise
+        fixed_xor_exercise,
+        single_byte_xor_cipher_exercise
     ]
 }
 
 fn hex_to_base64_exercise() {
     let hex_input = prompt_user("Enter data: ");
+    let input = match hex::decode(&hex_input) {
+        Ok(input) => input,
+        Err(_) => {
+            println!("Invalid hex string!");
+            std::process::exit(1)
+        }
+    };
 
-    if let Ok(base64_output) = hex_to_base64(&hex_input) {
-        println!("Result: {}", base64_output);
-    } else {
-        println!("Invalid input.");
-    }
+    let base64_output = base64::encode(input);
+    println!("Result: {}", base64_output);
 }
 
 fn fixed_xor_exercise() {
@@ -26,7 +31,7 @@ fn fixed_xor_exercise() {
         Ok(a) => a,
         Err(_) => {
             println!("Invalid first string!");
-            std::process::exit(1);
+            std::process::exit(1)
         }
     };
 
@@ -35,7 +40,7 @@ fn fixed_xor_exercise() {
         Ok(b) => b,
         Err(_) => {
             println!("Invalid second string!");
-            std::process::exit(1);
+            std::process::exit(1)
         }
     };
 
@@ -49,9 +54,6 @@ fn fixed_xor_exercise() {
     println!("Result: {}", hex_xor);
 }
 
-fn hex_to_base64(data: &str) -> Result<String, hex::FromHexError> {
-    let decoded_data = hex::decode(data)?;
-    Ok(base64::encode(decoded_data))
+fn single_byte_xor_cipher_exercise() {
+
 }
-
-
