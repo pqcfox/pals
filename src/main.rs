@@ -1,17 +1,10 @@
-use std::io;
-use std::io::Write;
+use crate::prompt::prompt_user;
+
+mod prompt;
 mod set_one;
 
-fn prompt_index(prompt: &str) -> Option<usize> {
-    print!("{}", prompt);
-    io::stdout().flush().unwrap();
-
-    let mut read_str = String::new();
-    io::stdin()
-        .read_line(&mut read_str)
-        .expect("Failed to read line");
-
-    let maybe_read_num = read_str.trim().parse();
+fn parse_index(num_str: &str) -> Option<usize> {
+    let maybe_read_num = num_str.trim().parse();
 
     if let Ok(read_num) = maybe_read_num {
         match read_num {
@@ -43,10 +36,10 @@ fn run(set: usize, exercise: usize) {
 }
 
 fn main() {
-    let maybe_set = prompt_index("Enter set: ");
-    if let Some(set) = maybe_set {
-        let maybe_exercise = prompt_index("Enter exercise: ");
-        if let Some(exercise) = maybe_exercise {
+    let set_str = prompt_user("Enter set: ");
+    if let Some(set) = parse_index(&set_str) {
+        let exercise_str = prompt_user("Enter exercise: ");
+        if let Some(exercise) = parse_index(&exercise_str) {
             run(set, exercise);
         } else{
             println!("Invalid exercise number!");

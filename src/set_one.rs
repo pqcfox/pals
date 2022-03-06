@@ -1,28 +1,27 @@
-use std::io;
-use std::io::Write;
 use base64;
 use hex;
 
+use crate::prompt::prompt_user;
+
 pub fn get_problem_fns() -> Vec<fn()> {
     vec![
-        hex_to_base64_exercise
+        hex_to_base64_exercise,
+        fixed_xor_exercise
     ]
 }
 
 fn hex_to_base64_exercise() {
-    print!("Enter data: ");
-    io::stdout().flush().unwrap();
-
-    let mut hex_input = String::new();
-    io::stdin()
-        .read_line(&mut hex_input)
-        .expect("Failed to read line");
+    let hex_input = prompt_user("Enter data: ");
 
     if let Ok(base64_output) = hex_to_base64(hex_input.trim()) {
         println!("Result: {}", base64_output);
     } else {
         println!("Invalid input.");
     }
+}
+
+fn fixed_xor_exercise() {
+    
 }
 
 fn hex_to_base64(data: &str) -> Result<String, hex::FromHexError> {
