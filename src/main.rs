@@ -1,20 +1,8 @@
 use crate::prompt::prompt_user;
+use crate::prompt::parse_index;
 
 mod prompt;
 mod set_one;
-
-fn parse_index(num_str: &str) -> Option<usize> {
-    let maybe_read_num = num_str.trim().parse();
-
-    if let Ok(read_num) = maybe_read_num {
-        match read_num {
-            0 => None,
-            _ => Some(read_num - 1)
-        }
-    } else {
-        None
-    }
-}
 
 fn get_set_fns() -> Vec<Vec<fn()>> {
     vec![
@@ -22,9 +10,22 @@ fn get_set_fns() -> Vec<Vec<fn()>> {
     ]
 }
 
+fn prompt_index(name: &str) -> usize {
+    let prompt = format!("Enter {}: ", name);
+    let index_str = prompt_user(&prompt);
+    match parse_index(&index_str) {
+        Some(index) => index,
+        None => {
+            println!("Invalid {} number!", name);
+            std::process::exit(1)
+        }
+    }
+}
+
 fn run(set: usize, exercise: usize) {
     let set_fns = get_set_fns();
     if let Some(exercise_fns) = set_fns.get(set) {
+
         if let Some(exercise_fn) = exercise_fns.get(exercise) {
             exercise_fn()
         } else {
@@ -36,15 +37,7 @@ fn run(set: usize, exercise: usize) {
 }
 
 fn main() {
-    let set_str = prompt_user("Enter set: ");
-    if let Some(set) = parse_index(&set_str) {
-        let exercise_str = prompt_user("Enter exercise: ");
-        if let Some(exercise) = parse_index(&exercise_str) {
-            run(set, exercise);
-        } else{
-            println!("Invalid exercise number!");
-        }
-    } else {
-        println!("Invalid set number!");
-    }
+    let set = prompt_index("set");
+    let exercise = prompt_index("exercise");
+    run(set, exercise)
 }
