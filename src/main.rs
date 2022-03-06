@@ -6,12 +6,12 @@ fn prompt_index(prompt: &str) -> Option<usize> {
     print!("{}", prompt);
     io::stdout().flush().unwrap();
 
-    let mut result = String::new();
+    let mut read_str = String::new();
     io::stdin()
-        .read_line(&mut result)
+        .read_line(&mut read_str)
         .expect("Failed to read line");
 
-    let maybe_read_num = result.trim().parse();
+    let maybe_read_num = read_str.trim().parse();
 
     if let Ok(read_num) = maybe_read_num {
         match read_num {
