@@ -1,6 +1,7 @@
 use crate::prompt::prompt_user;
 use crate::prompt::parse_index;
 
+mod freq;
 mod prompt;
 mod set_one;
 
