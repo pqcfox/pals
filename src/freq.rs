@@ -31,7 +31,6 @@ static LETTER_FREQS: Map<char, f32> = phf_map! {
 };
 
 pub fn score_freqs(text: &str) -> f32 {
-    let chars = text.chars();
     let actual_freqs: HashMap<_, _> = LETTER_FREQS.keys()
         .map(|freq_char| {
             let char_count = text.chars().filter(|c| c == freq_char).count();
