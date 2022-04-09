@@ -1,32 +1,15 @@
 use hex;
 
 use crate::prompt::prompt_user;
+use crate::set_one::xor::xor;
 
 pub fn fixed_xor_exercise() {
     let hex_a = prompt_user("Enter first string: ");
-    let a = match hex::decode(&hex_a) {
-        Ok(a) => a,
-        Err(_) => {
-            println!("Invalid first string!");
-            std::process::exit(1)
-        }
-    };
+    let a = hex::decode(&hex_a).expect("Invalid hex!");
 
     let hex_b = prompt_user("Enter second string: ");
-    let b = match hex::decode(&hex_b) {
-        Ok(b) => b,
-        Err(_) => {
-            println!("Invalid second string!");
-            std::process::exit(1)
-        }
-    };
+    let b = hex::decode(&hex_b).expect("Invalid hex!");
 
-    let xor: Vec<u8> = a
-        .iter()
-        .zip(b.iter())
-        .map(|(a, b)| a ^ b)
-        .collect();
-
-    let hex_xor = hex::encode(xor);
+    let hex_xor = hex::encode(xor(a, b));
     println!("Result: {}", hex_xor);
 }

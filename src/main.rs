@@ -1,9 +1,9 @@
 use crate::prompt::prompt_user;
 use crate::prompt::parse_index;
 
-mod freq;
-mod prompt;
 mod set_one;
+mod prompt;
+
 
 fn get_set_fns() -> Vec<Vec<fn()>> {
     vec![
@@ -11,34 +11,16 @@ fn get_set_fns() -> Vec<Vec<fn()>> {
     ]
 }
 
-fn prompt_index(name: &str) -> usize {
-    let prompt = format!("Enter {}: ", name);
-    let index_str = prompt_user(&prompt);
-    match parse_index(&index_str) {
-        Some(index) => index,
-        None => {
-            println!("Invalid {} number!", name);
-            std::process::exit(1)
-        }
-    }
-}
-
-fn run(set: usize, exercise: usize) {
-    let set_fns = get_set_fns();
-    if let Some(exercise_fns) = set_fns.get(set) {
-
-        if let Some(exercise_fn) = exercise_fns.get(exercise) {
-            exercise_fn()
-        } else {
-            println!("Not that many exercises in set {}!", set + 1);
-        }
-    } else {
-        println!("Not that many sets!");
-    }
-}
-
 fn main() {
-    let set = prompt_index("set");
-    let exercise = prompt_index("exercise");
-    run(set, exercise)
+    let set_fns = get_set_fns();
+
+    let set: usize = prompt_user("Enter set: ")
+        .parse()
+        .expect("Invalid index!");
+
+    let exercise: usize = prompt_user("Enter exercise: ")
+        .parse()
+        .expect("Invalid index!");
+
+    set_fns[set - 1][exercise - 1]();
 }
