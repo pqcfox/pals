@@ -31,22 +31,16 @@ static LETTER_FREQS: Map<char, f32> = phf_map! {
 };
 
 pub fn score_freqs(text: &str) -> f32 {
-    let actual_freqs: HashMap<_, _> = LETTER_FREQS.keys()
-        .map(|freq_char| {
-            let char_count = text.chars().filter(|c| c == freq_char).count();
-            let full_count = text.chars().count();
-            let freq = 100.0 * char_count as f32 / full_count as f32;
-            (freq_char, freq)
+    let text_freqs: HashMap<_, _> = LETTER_FREQS.keys()
+        .map(|c| {
+            let char_count = text.chars().filter(|x| x == c).count();
+            let text_size = text.chars().count();
+            let freq = 100.0 * char_count as f32 / text_size as f32;
+            (c, freq)
         })
         .collect();
 
-    let score = LETTER_FREQS.keys()
-        .map(|freq_char| {
-            let actual_freq = actual_freqs[freq_char];
-            let ideal_freq = LETTER_FREQS[freq_char];
-            (actual_freq - ideal_freq).abs()
-        })
-        .sum();
-
-    score
+    LETTER_FREQS.keys()
+        .map(|c| (text_freqs[c] - LETTER_FREQS[c]).abs())
+        .sum()
 }

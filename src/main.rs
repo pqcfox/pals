@@ -1,5 +1,4 @@
 use crate::prompt::prompt_user;
-use crate::prompt::parse_index;
 
 mod set_one;
 mod prompt;
