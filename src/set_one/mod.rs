@@ -2,6 +2,7 @@ mod prob_one;
 mod prob_two;
 mod prob_three;
 mod prob_four;
+mod prob_five;
 
 mod xor;
 mod freq;
@@ -11,6 +12,7 @@ pub fn get_problem_fns() -> Vec<fn()> {
         prob_one::hex_to_base64_exercise,
         prob_two::fixed_xor_exercise,
         prob_three::single_byte_xor_cipher_exercise,
-        prob_four::detect_single_character_xor_exercise
+        prob_four::detect_single_character_xor_exercise,
+        prob_five::implement_repeating_key_xor_exercise
     ]
 }

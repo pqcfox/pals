@@ -40,4 +40,9 @@ pub fn find_single_byte_xor(cts: &[Vec<u8>]) -> Option<String>{
     }).map(|(ct, _)| ct)
 }
 
-// pub fn encrypt_repeating_xor(
+pub fn encrypt_repeating_xor(pt: &[u8], key: &[u8]) -> Vec<u8> {
+    pt.iter()
+        .zip(key.iter().cycle())
+        .map(|(x, y)| x ^ y)
+        .collect()
+}
