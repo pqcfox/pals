@@ -1,5 +1,3 @@
-use hex;
-
 use crate::prompt::prompt_user;
 use crate::set_one::xor::xor;
 

@@ -1,6 +1,3 @@
-use hex;
-use base64;
-
 use crate::prompt::prompt_user;
 
 pub fn hex_to_base64_exercise() {
