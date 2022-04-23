@@ -1,7 +1,7 @@
 use crate::set_one::freq::score_freqs;
 use std::str::from_utf8;
 
-pub fn xor(a: Vec<u8>, b: Vec<u8>) -> Vec<u8> {
+pub fn xor(a: &[u8], b: &[u8]) -> Vec<u8> {
     a.iter().zip(b.iter())
         .map(|(a, b)| a ^ b)
         .collect()
@@ -30,13 +30,14 @@ pub fn decode_single_byte_xor(ct: &[u8]) -> Option<(String, f32)> {
     })
 }
 
-pub fn find_single_byte_xor(cts: Vec<Vec<u8>>) -> Option<String>{
-    let score_pairs: Vec<(String, f32)> = cts
+pub fn find_single_byte_xor(cts: &[Vec<u8>]) -> Option<String>{
+    let score_pairs = cts
         .iter()
-        .filter_map(|ct| decode_single_byte_xor(ct))
-        .collect();
+        .filter_map(|ct| decode_single_byte_xor(ct));
 
-    score_pairs.into_iter().min_by(|(_, x), (_, y)| {
+    score_pairs.min_by(|(_, x), (_, y)| {
         x.partial_cmp(y).unwrap()
     }).map(|(ct, _)| ct)
 }
+
+// pub fn encrypt_repeating_xor(

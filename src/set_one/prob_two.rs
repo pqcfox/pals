@@ -8,6 +8,6 @@ pub fn fixed_xor_exercise() {
     let hex_b = prompt_user("Enter second string: ");
     let b = hex::decode(&hex_b).expect("Invalid hex!");
 
-    let hex_xor = hex::encode(xor(a, b));
+    let hex_xor = hex::encode(xor(&a, &b));
     println!("Result: {}", hex_xor);
 }
