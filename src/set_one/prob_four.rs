@@ -11,8 +11,8 @@ pub fn detect_single_character_xor_exercise() {
         .filter_map(|line| hex::decode(&line).ok())
         .collect();
 
-    if let Some(pt) = find_single_byte_xor(&cts) {
-        println!("Result: {}", pt);
+    if let Some((_, decode)) = find_single_byte_xor(&cts) {
+        println!("Result: {}", decode.pt);
     } else {
         println!("No plaintext found!");
     }

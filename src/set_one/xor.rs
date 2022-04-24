@@ -3,44 +3,58 @@ use std::str::from_utf8;
 use crate::set_one::freq::score_freqs;
 use crate::set_one::dist::hamming_dist;
 
+pub struct SingleByteXORDecode {
+    pub pt: String,
+    pub key: u8,
+    pub score: f32
+}
+
 pub fn xor(a: &[u8], b: &[u8]) -> Vec<u8> {
     a.iter().zip(b.iter())
         .map(|(a, b)| a ^ b)
         .collect()
 }
 
-pub fn decode_single_byte_xor(ct: &[u8]) -> Option<(String, f32)> {
-    let pts = (0..=255)
-        .filter_map(|x| {
+
+// single byte XOR
+
+pub fn decode_single_byte_xor(ct: &[u8]) -> Option<SingleByteXORDecode> {
+    let pt_key_pairs = (0..=255)
+        .filter_map(|key| {
             let pt_bytes: Vec<u8> = ct.iter()
-                .map(|y| x ^ y)
+                .map(|x| key ^ x)
                 .collect();
 
-            from_utf8(&pt_bytes)
+            let pt = from_utf8(&pt_bytes)
                 .ok()
-                .map(|text| text.to_owned())
+                .map(|text| text.to_owned());
+
+            pt.map(|pt| (pt, key))
         });
 
-    let score_pairs = pts
-        .map(|pt| {
+    let decodes = pt_key_pairs
+        .map(|(pt, key)| {
             let score = score_freqs(&pt);
-            (pt, score) 
+            SingleByteXORDecode {pt, key, score}
         });
 
-    score_pairs.min_by(|(_, x), (_, y)| {
-        x.partial_cmp(y).unwrap()
+    decodes.min_by(|d1, d2| {
+        d1.score.partial_cmp(&d2.score).unwrap()
     })
 }
 
-pub fn find_single_byte_xor(cts: &[Vec<u8>]) -> Option<String>{
-    let score_pairs = cts
+pub fn find_single_byte_xor(cts: &[Vec<u8>]) -> Option<(Vec<u8>, SingleByteXORDecode)>{
+    let decode_pairs = cts
         .iter()
-        .filter_map(|ct| decode_single_byte_xor(ct));
+        .filter_map(|ct| decode_single_byte_xor(ct).map(|d| (ct, d)));
 
-    score_pairs.min_by(|(_, x), (_, y)| {
-        x.partial_cmp(y).unwrap()
-    }).map(|(ct, _)| ct)
+    decode_pairs.min_by(|(_, d1), (_, d2)| {
+        d1.score.partial_cmp(&d2.score).unwrap()
+    }).map(|(ct, d)| (ct.to_owned(), d))
 }
+
+
+// repeating XOR
 
 pub fn encrypt_repeating_xor(pt: &[u8], key: &[u8]) -> Vec<u8> {
     pt.iter()
@@ -48,6 +62,11 @@ pub fn encrypt_repeating_xor(pt: &[u8], key: &[u8]) -> Vec<u8> {
         .map(|(x, y)| x ^ y)
         .collect()
 }
+
+pub fn decrypt_repeating_xor(pt: &[u8], key: &[u8]) -> Vec<u8> {
+    encrypt_repeating_xor(pt, key)
+}
+
 
 pub fn detect_xor_keysizes(ct: &[u8]) -> Vec<usize>{
     let mut dist_pairs: Vec<(usize, u32)> = (2..40).map(|size| {
@@ -57,7 +76,7 @@ pub fn detect_xor_keysizes(ct: &[u8]) -> Vec<usize>{
 
     dist_pairs.sort_by(|&(s1, d1), &(s2, d2)| {
         let r1 = d1 as f32 / s1 as f32;
-        let r2 = d2 as f32/ s2 as f32;
+        let r2 = d2 as f32 / s2 as f32;
         r1.partial_cmp(&r2).unwrap()
     });
 
