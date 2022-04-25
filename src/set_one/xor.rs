@@ -19,8 +19,8 @@ pub struct RepeatingXORDecode {
 
 
 pub struct DetectXORSettings {
-    pairs: usize,
-    maxlen: usize
+    pub pairs: usize,
+    pub maxlen: usize
 }
 
 
@@ -85,11 +85,11 @@ pub fn decrypt_repeating_xor(ct: &[u8], key: &[u8]) -> Vec<u8> {
 
 pub fn detect_xor_keysizes(ct: &[u8], ds: &DetectXORSettings) -> Vec<usize>{
     let mut dist_pairs: Vec<(usize, f32)> = (2..ds.maxlen).map(|size| {
-        let dist: u32 = (0..ds.pairs).map(|i| hamming_dist(
+        let dist: u32 = (0..2*ds.pairs).step_by(2).map(|i| hamming_dist(
                 &ct[i*size..(i + 1)*size],
                 &ct[(i + 1)*size..(i + 2)*size]
             )).sum();
-        (size, dist as f32 / (3 * size) as f32)
+        (size, dist as f32 / size as f32)
     }).collect();
 
     dist_pairs.sort_by(|&(_ , s1), &(_, s2)| {
@@ -115,17 +115,15 @@ pub fn decode_repeating_xor(ct: &[u8], ds: &DetectXORSettings) -> Option<Repeati
                 decode_single_byte_xor(&ct).map(|d| d.key)
             }).collect();
 
-        let maybe_pair = maybe_key.and_then(|key| {
-            let pt_bytes: Vec<u8> = decrypt_repeating_xor(&ct, &key);
+        maybe_key.and_then(|key| {
+            let pt_bytes: Vec<u8> = decrypt_repeating_xor(ct, &key);
             
             let maybe_pt: Option<String> = from_utf8(&pt_bytes)
                 .ok()
                 .map(|text| text.to_owned());
 
             maybe_pt.map(|pt| (pt, key))
-        });
-
-        maybe_pair
+        })
     });
 
     let decodes = pt_key_pairs
