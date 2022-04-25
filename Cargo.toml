@@ -8,4 +8,5 @@ edition = "2021"
 [dependencies]
 hex = "0.4"
 base64 = "0.13"
+openssl = "0.10"
 phf = { version = "0.10", features = ["macros"] }
